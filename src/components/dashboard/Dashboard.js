@@ -59,25 +59,11 @@ const styles = theme => ({
     },
     heroContent: {
         backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(8, 0, 6),
+        padding: theme.spacing(6, 0, 6),
     },
-    heroButtons: {
-        marginTop: theme.spacing(4),
-    },
-    cardGrid: {
-        paddingTop: theme.spacing(8),
-        paddingBottom: theme.spacing(8),
-    },
-    card: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    cardMedia: {
-        paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-        flexGrow: 1,
+    chartBody: {
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4)
     },
     footer: {
         backgroundColor: theme.palette.background.paper,
@@ -97,7 +83,7 @@ class Dashboard extends React.Component {
             <React.Fragment>
                 <CssBaseline />
                 <AppBar position="relative">
-                    <Toolbar>
+                    <Toolbar variant="dense">
                         <SportsSoccerOutlined className={classes.icon} />
                         <Typography variant="h6" color="inherit" noWrap>
                             CPI - StrawHats
@@ -116,7 +102,7 @@ class Dashboard extends React.Component {
                             </Typography>
                         </Container>
                     </div>
-                    <Container className={classes.cardGrid} maxWidth="md">
+                    <Container className={classes.chartBody} maxWidth="md">
                         <LineChart
                             width={550}
                             height={300}
