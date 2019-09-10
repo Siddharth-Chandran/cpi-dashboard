@@ -8,6 +8,37 @@ import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import PropTypes from 'prop-types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
+
+const data = [
+    {
+        name: 'January', actual: 4000, predicted: 5500, amt: 2400,
+    },
+    {
+        name: 'February', actual: 3000, predicted: 3500, amt: 2210,
+    },
+    {
+        name: 'March', actual: 2000, predicted: 3000, amt: 2290,
+    },
+    {
+        name: 'April', actual: 2780, predicted: 3908, amt: 2000,
+    },
+    {
+        name: 'May', actual: 1890, predicted: 3000, amt: 2181,
+    },
+    {
+        name: 'June', actual: 2390, predicted: 3800, amt: 2500,
+    },
+    {
+        name: 'July', actual: 3490, predicted: 4300, amt: 2100,
+    },
+    {
+        name: 'Auguest', actual: 3490, predicted: 4300, amt: 2100,
+    },
+    {
+        name: 'September', predicted: 4300, amt: 2100,
+    },
+];
 
 function Copyright() {
     return (
@@ -81,12 +112,27 @@ class Dashboard extends React.Component {
                                 CPI Prediction
                             </Typography>
                             <Typography variant="h5" align="center" color="textSecondary" paragraph>
-                               A group of lawless pirates trying to predict the cpi index of India. 
+                                A group of lawless pirates trying to predict the cpi index of India.
                             </Typography>
                         </Container>
                     </div>
                     <Container className={classes.cardGrid} maxWidth="md">
-                        Need to put up graphs here
+                        <LineChart
+                            width={550}
+                            height={300}
+                            data={data}
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="actual" stroke="#8884d8" activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="predicted" stroke="#82ca9d" />
+                        </LineChart>
                     </Container>
                 </main>
                 {/* Footer */}
