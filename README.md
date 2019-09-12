@@ -6,7 +6,7 @@ In the project directory, you can run:
 
 ### `npm install`
 
-Runs and installs all dependencies in the package.json<br/>s
+Runs and installs all dependencies in the package.json<br/>
 Using node version: v10.5.3
 
 ### `npm start`
