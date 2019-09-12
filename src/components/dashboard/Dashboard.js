@@ -9,6 +9,9 @@ import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import PropTypes from 'prop-types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import Button from '@material-ui/core/Button';
 
 const data = [
     {
@@ -63,20 +66,49 @@ const styles = theme => ({
     },
     chartBody: {
         paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4)
+        paddingBottom: theme.spacing(4),
+        marginLeft: theme.spacing(2),
     },
     footer: {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(6),
     },
+    dateLayout: {
+        width: 'auto',
+        marginRight: theme.spacing(3),
+        marginLeft: theme.spacing(12),
+        marginTop: theme.spacing(3),
+        paddingTop: theme.spacing(1)
+    },
+    button: {
+        marginLeft: theme.spacing(2),
+    },
 });
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 class Dashboard extends React.Component {
+
+    state = {
+        selectedDate: new Date(),
+    }
+
+    handleDateChange = date => {
+        this.setState({ selectedDate: date })
+    }
+
+    handleCPISubmit = () => {
+        var date = this.state.selectedDate.toISOString()
+        date = date.substr(0, date.indexOf("T"))
+        /** Uncomment below when the API is ready */
+        // fetch('url')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         /** Do whatever we want to create the graphs */
+        //         return data
+        //     })
+    }
+
     render() {
-
-
         const { classes } = this.props;
 
         return (
@@ -91,7 +123,6 @@ class Dashboard extends React.Component {
                     </Toolbar>
                 </AppBar>
                 <main>
-                    {/* Hero unit */}
                     <div className={classes.heroContent}>
                         <Container maxWidth="sm">
                             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
@@ -102,6 +133,18 @@ class Dashboard extends React.Component {
                             </Typography>
                         </Container>
                     </div>
+                    <div className={classes.dateLayout}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                clearable
+                                value={this.state.selectedDate}
+                                placeholder="10/10/2018"
+                                onChange={date => this.handleDateChange(date)}
+                                format="dd-MMM-yyyy"
+                            />
+                        </MuiPickersUtilsProvider>
+                        <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
+                    </div>
                     <Container className={classes.chartBody} maxWidth="md">
                         <LineChart
                             width={550}
@@ -109,8 +152,7 @@ class Dashboard extends React.Component {
                             data={data}
                             margin={{
                                 top: 5, right: 30, left: 20, bottom: 5,
-                            }}
-                        >
+                            }}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
@@ -121,13 +163,14 @@ class Dashboard extends React.Component {
                         </LineChart>
                     </Container>
                 </main>
+
                 {/* Footer */}
                 <footer className={classes.footer}>
                     <Typography variant="h6" align="center" gutterBottom>
                         Monkey D Luffy
         </Typography>
                     <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                        Gomu gomu ...!
+                        Gomu gomu no mi !
         </Typography>
                     <Copyright />
                 </footer>
