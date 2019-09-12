@@ -44,6 +44,8 @@ const data = [
     },
 ];
 
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -92,7 +94,7 @@ class Dashboard extends React.Component {
     /** Initializing data with default data, will replace once handleCPISubmit function is called */
     state = {
         selectedDate: new Date(),
-        data: data,
+        cpi: 20,
     }
 
     handleDateChange = date => {
@@ -101,11 +103,11 @@ class Dashboard extends React.Component {
 
     /** After fetching from backend, will re-render the data value of the page state */
     handleCPISubmit = () => {
-        var date = this.state.selectedDate.toISOString()
-        date = date.substr(0, date.indexOf("T"))
+        var date = this.state.selectedDate
+        date = `${date.getFullYear()}-${date.getMonth() + 1}-01`
         fetch(`url/${date}`)
             .then(response => response.json())
-            .then(data => this.setState({ data: data }))
+            .then(data => this.setState({ cpi: data.value }))
     }
 
     render() {
@@ -142,13 +144,16 @@ class Dashboard extends React.Component {
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 clearable
+                                openTo="year"
+                                views={["year", "month"]}
                                 value={this.state.selectedDate}
-                                placeholder="10/10/2018"
                                 onChange={date => this.handleDateChange(date)}
-                                format="dd-MMM-yyyy"
                             />
                         </MuiPickersUtilsProvider>
                         <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
+                        <Typography variant="subtitle1" >
+                            CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
+                        </Typography>
                     </div>
                     {/* Div to collect date - End */}
                     {/* Chart container - Start */}
@@ -156,7 +161,7 @@ class Dashboard extends React.Component {
                         <LineChart
                             width={550}
                             height={300}
-                            data={this.state.data}
+                            data={data}
                             margin={{
                                 top: 5, right: 30, left: 20, bottom: 5,
                             }}>
