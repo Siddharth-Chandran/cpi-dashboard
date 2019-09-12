@@ -13,33 +13,34 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
 
+/** Needs to be removed after completing backend API */
 const data = [
     {
-        name: 'January', actual: 4000, predicted: 5500, amt: 2400,
+        month: 'January', actual: 4000, predicted: 5500,
     },
     {
-        name: 'February', actual: 3000, predicted: 3500, amt: 2210,
+        month: 'February', actual: 3000, predicted: 3500,
     },
     {
-        name: 'March', actual: 2000, predicted: 3000, amt: 2290,
+        month: 'March', actual: 2000, predicted: 3000,
     },
     {
-        name: 'April', actual: 2780, predicted: 3908, amt: 2000,
+        month: 'April', actual: 2780, predicted: 3908,
     },
     {
-        name: 'May', actual: 1890, predicted: 3000, amt: 2181,
+        month: 'May', actual: 1890, predicted: 3000,
     },
     {
-        name: 'June', actual: 2390, predicted: 3800, amt: 2500,
+        month: 'June', actual: 2390, predicted: 3800,
     },
     {
-        name: 'July', actual: 3490, predicted: 4300, amt: 2100,
+        month: 'July', actual: 3490, predicted: 4300,
     },
     {
-        name: 'Auguest', actual: 3490, predicted: 4300, amt: 2100,
+        month: 'Auguest', actual: 3490, predicted: 4300,
     },
     {
-        name: 'September', predicted: 4300, amt: 2100,
+        month: 'September', predicted: 4300,
     },
 ];
 
@@ -88,24 +89,23 @@ const styles = theme => ({
 
 class Dashboard extends React.Component {
 
+    /** Initializing data with default data, will replace once handleCPISubmit function is called */
     state = {
         selectedDate: new Date(),
+        data: data,
     }
 
     handleDateChange = date => {
         this.setState({ selectedDate: date })
     }
 
+    /** After fetching from backend, will re-render the data value of the page state */
     handleCPISubmit = () => {
         var date = this.state.selectedDate.toISOString()
         date = date.substr(0, date.indexOf("T"))
-        /** Uncomment below when the API is ready */
-        // fetch('url')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         /** Do whatever we want to create the graphs */
-        //         return data
-        //     })
+        fetch(`url/${date}`)
+            .then(response => response.json())
+            .then(data => this.setState({ data: data }))
     }
 
     render() {
@@ -114,6 +114,7 @@ class Dashboard extends React.Component {
         return (
             <React.Fragment>
                 <CssBaseline />
+                {/* NavBar - start */}
                 <AppBar position="relative">
                     <Toolbar variant="dense">
                         <SportsSoccerOutlined className={classes.icon} />
@@ -122,7 +123,9 @@ class Dashboard extends React.Component {
                         </Typography>
                     </Toolbar>
                 </AppBar>
+                {/* NavBar - end */}
                 <main>
+                    {/* CPI header part */}
                     <div className={classes.heroContent}>
                         <Container maxWidth="sm">
                             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
@@ -133,6 +136,8 @@ class Dashboard extends React.Component {
                             </Typography>
                         </Container>
                     </div>
+                    {/* CPI header end */}
+                    {/* Div to collect date and submit to fetch CPI values */}
                     <div className={classes.dateLayout}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -145,11 +150,13 @@ class Dashboard extends React.Component {
                         </MuiPickersUtilsProvider>
                         <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
                     </div>
+                    {/* Div to collect date - End */}
+                    {/* Chart container - Start */}
                     <Container className={classes.chartBody} maxWidth="md">
                         <LineChart
                             width={550}
                             height={300}
-                            data={data}
+                            data={this.state.data}
                             margin={{
                                 top: 5, right: 30, left: 20, bottom: 5,
                             }}>
@@ -162,16 +169,17 @@ class Dashboard extends React.Component {
                             <Line type="monotone" dataKey="predicted" stroke="#82ca9d" />
                         </LineChart>
                     </Container>
+                    {/* Chart container - End */}
                 </main>
 
                 {/* Footer */}
                 <footer className={classes.footer}>
                     <Typography variant="h6" align="center" gutterBottom>
                         Monkey D Luffy
-        </Typography>
+                    </Typography>
                     <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
                         Gomu gomu no mi !
-        </Typography>
+                    </Typography>
                     <Copyright />
                 </footer>
                 {/* End footer */}
