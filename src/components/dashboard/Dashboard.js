@@ -91,9 +91,9 @@ class Dashboard extends React.Component {
     /** Initializing data with default data, will replace once handleCPISubmit function is called */
     state = {
         selectedDate: new Date(),
-        cpi: undefined,
+        //selectedDate: '',
+        cpi: '',
     }
-
     handleDateChange = date => {
         this.setState({ selectedDate: date })
     }
@@ -102,9 +102,11 @@ class Dashboard extends React.Component {
     handleCPISubmit = () => {
         var date = this.state.selectedDate
         date = `${date.getFullYear()}-${date.getMonth() + 1}-01`
-        fetch(`url/${date}`)
+        console.log(date)
+        fetch(`http://localhost:5000/time/${date}`)
             .then(response => response.json())
-            .then(data => this.setState({ cpi: data.value }))
+            //.then(data => this.setState({ cpi: '10' }))
+            .then(data => this.setState({ cpi: data }))
     }
 
     render() {
