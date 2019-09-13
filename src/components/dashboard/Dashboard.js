@@ -15,33 +15,15 @@ import Button from '@material-ui/core/Button';
 
 /** Needs to be removed after completing backend API */
 const data = [
-    {
-        month: 'January', actual: 4000, predicted: 5500,
-    },
-    {
-        month: 'February', actual: 3000, predicted: 3500,
-    },
-    {
-        month: 'March', actual: 2000, predicted: 3000,
-    },
-    {
-        month: 'April', actual: 2780, predicted: 3908,
-    },
-    {
-        month: 'May', actual: 1890, predicted: 3000,
-    },
-    {
-        month: 'June', actual: 2390, predicted: 3800,
-    },
-    {
-        month: 'July', actual: 3490, predicted: 4300,
-    },
-    {
-        month: 'Auguest', actual: 3490, predicted: 4300,
-    },
-    {
-        month: 'September', predicted: 4300,
-    },
+    { month: 'January', actual: 4000, predicted: 5500, },
+    { month: 'February', actual: 3000, predicted: 3500, },
+    { month: 'March', actual: 2000, predicted: 3000, },
+    { month: 'April', actual: 2780, predicted: 3908, },
+    { month: 'May', actual: 1890, predicted: 3000, },
+    { month: 'June', actual: 2390, predicted: 3800, },
+    { month: 'July', actual: 3490, predicted: 4300, },
+    { month: 'Auguest', actual: 3490, predicted: 4300, },
+    { month: 'September', predicted: 4300, },
 ];
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -94,7 +76,7 @@ class Dashboard extends React.Component {
     /** Initializing data with default data, will replace once handleCPISubmit function is called */
     state = {
         selectedDate: new Date(),
-        cpi: 20,
+        cpi: undefined,
     }
 
     handleDateChange = date => {
@@ -151,9 +133,12 @@ class Dashboard extends React.Component {
                             />
                         </MuiPickersUtilsProvider>
                         <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
-                        <Typography variant="subtitle1" >
-                            CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
-                        </Typography>
+                        {
+                            this.state.cpi !== undefined &&
+                            <Typography variant="subtitle1" >
+                                CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
+                            </Typography>
+                        }
                     </div>
                     {/* Div to collect date - End */}
                     {/* Chart container - Start */}
