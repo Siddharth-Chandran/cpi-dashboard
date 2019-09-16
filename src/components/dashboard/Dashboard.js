@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import SportsSoccerOutlined from '@material-ui/icons/SportsSoccerOutlined';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,36 +12,59 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from '
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
+import MaterialTable from 'material-table'
+import { AddBox, ArrowUpward, Check, ChevronLeft, ChevronRight, Clear, DeleteOutline, Edit, FilterList } from '@material-ui/icons';
+import { FirstPage, LastPage, Remove, SaveAlt, Search, ViewColumn } from '@material-ui/icons';
 
 /** Needs to be removed after completing backend API */
-const data =[
-{'month': '2017-08-01', 'actual': 143.4, 'predicted': 145.6351178886652},
-{'month': '2017-09-01', 'actual': 142.4, 'predicted': 142.0648096738322},
-{'month': '2017-10-01', 'actual': 142.2, 'predicted': 143.4797602255898},
-{'month': '2017-11-01', 'actual': 142.4, 'predicted': 142.95425889977426},
-{'month': '2017-12-01', 'actual': 143.3, 'predicted': 143.25334313491103},
-{'month': '2018-01-01', 'actual': 144.2, 'predicted': 144.5357134351441},
-{'month': '2018-02-01', 'actual': 143.5, 'predicted': 144.23886529964204},
-{'month': '2018-03-01', 'actual': 143.6, 'predicted': 144.04306817109023},
-{'month': '2018-04-01', 'actual': 144.4, 'predicted': 145.67989143124345},
-{'month': '2018-05-01', 'actual': 146.6, 'predicted': 146.2513355600155},
-{'month': '2018-06-01', 'actual': 148.7, 'predicted': 147.84808155185},
-{'month': '2018-07-01', 'actual': 149.1, 'predicted': 149.983127399407},
-{'month': '2018-08-01', 'actual': 148.0, 'predicted': 148.76277389563907},
-{'month': '2018-09-01', 'actual': 145.8, 'predicted': 147.48996608543771},
-{'month': '2018-10-01', 'actual': 146.7, 'predicted': 145.94555093650698},
-{'month': '2018-11-01', 'actual': 149.2, 'predicted': 148.23302049746948},
-{'month': '2018-12-01', 'actual': 150.5, 'predicted': 151.29764144056156},
-{'month': '2019-01-01', 'actual': 151.4, 'predicted': 150.18524668914114},
-{'month': '2019-02-01', 'actual': 152.0, 'predicted': 151.47346860214623},
-{'month': '2019-03-01', 'actual': 153.0, 'predicted': 152.51374589187685},
-{'month': '2019-04-01', 'actual': 155.3, 'predicted': 153.75083805978332},
-{'month': '2019-05-01', 'actual': 158.5, 'predicted': 157.309647385509},
-{'month': '2019-06-01', 'actual': 162.1, 'predicted': 159.28317530728728},
-{'month': '2019-07-01', 'actual': 162.6, 'predicted': 162.28299532145914}
+const data = [
+    { 'month': '2017-08-01', 'actual': 143.4, 'predicted': 145.6351178886652 },
+    { 'month': '2017-09-01', 'actual': 142.4, 'predicted': 142.0648096738322 },
+    { 'month': '2017-10-01', 'actual': 142.2, 'predicted': 143.4797602255898 },
+    { 'month': '2017-11-01', 'actual': 142.4, 'predicted': 142.95425889977426 },
+    { 'month': '2017-12-01', 'actual': 143.3, 'predicted': 143.25334313491103 },
+    { 'month': '2018-01-01', 'actual': 144.2, 'predicted': 144.5357134351441 },
+    { 'month': '2018-02-01', 'actual': 143.5, 'predicted': 144.23886529964204 },
+    { 'month': '2018-03-01', 'actual': 143.6, 'predicted': 144.04306817109023 },
+    { 'month': '2018-04-01', 'actual': 144.4, 'predicted': 145.67989143124345 },
+    { 'month': '2018-05-01', 'actual': 146.6, 'predicted': 146.2513355600155 },
+    { 'month': '2018-06-01', 'actual': 148.7, 'predicted': 147.84808155185 },
+    { 'month': '2018-07-01', 'actual': 149.1, 'predicted': 149.983127399407 },
+    { 'month': '2018-08-01', 'actual': 148.0, 'predicted': 148.76277389563907 },
+    { 'month': '2018-09-01', 'actual': 145.8, 'predicted': 147.48996608543771 },
+    { 'month': '2018-10-01', 'actual': 146.7, 'predicted': 145.94555093650698 },
+    { 'month': '2018-11-01', 'actual': 149.2, 'predicted': 148.23302049746948 },
+    { 'month': '2018-12-01', 'actual': 150.5, 'predicted': 151.29764144056156 },
+    { 'month': '2019-01-01', 'actual': 151.4, 'predicted': 150.18524668914114 },
+    { 'month': '2019-02-01', 'actual': 152.0, 'predicted': 151.47346860214623 },
+    { 'month': '2019-03-01', 'actual': 153.0, 'predicted': 152.51374589187685 },
+    { 'month': '2019-04-01', 'actual': 155.3, 'predicted': 153.75083805978332 },
+    { 'month': '2019-05-01', 'actual': 158.5, 'predicted': 157.309647385509 },
+    { 'month': '2019-06-01', 'actual': 162.1, 'predicted': 159.28317530728728 },
+    { 'month': '2019-07-01', 'actual': 162.6, 'predicted': 162.28299532145914 }
 ];
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+const tableIcons = {
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
 
 function Copyright() {
     return (
@@ -62,7 +85,7 @@ const styles = theme => ({
     },
     heroContent: {
         backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(6, 0, 6),
+        padding: theme.spacing(4, 0, 6),
     },
     chartBody: {
         paddingTop: theme.spacing(4),
@@ -91,9 +114,15 @@ class Dashboard extends React.Component {
     /** Initializing data with default data, will replace once handleCPISubmit function is called */
     state = {
         selectedDate: new Date(),
-        //selectedDate: '',
         cpi: '',
+        columnData: [],
+        rawCPIData: undefined,
     }
+
+    componentDidMount() {
+        this.getRawCPIData()
+    }
+
     handleDateChange = date => {
         this.setState({ selectedDate: date })
     }
@@ -102,11 +131,23 @@ class Dashboard extends React.Component {
     handleCPISubmit = () => {
         var date = this.state.selectedDate
         date = `${date.getFullYear()}-${date.getMonth() + 1}-01`
-        console.log(date)
         fetch(`http://localhost:5000/time/${date}`)
             .then(response => response.json())
-            //.then(data => this.setState({ cpi: '10' }))
             .then(data => this.setState({ cpi: data }))
+    }
+
+    /** Get past CPI values in JSON format from back-end */
+    getRawCPIData = () => {
+        fetch('http://192.168.29.189:5000/getjson')
+            .then(response => response.json())
+            .then(data => {
+                let columnData = data.reduce((keys, obj) => (
+                    keys.concat(Object.keys(obj).filter(key => (
+                        keys.indexOf(key) === -1
+                    )))
+                ), [])
+                this.setState({ rawCPIData: data, columnData: columnData })
+            })
     }
 
     render() {
@@ -138,6 +179,47 @@ class Dashboard extends React.Component {
                         </Container>
                     </div>
                     {/* CPI header end */}
+                    <br /><br />
+                    {/* Table for all CPI past data with edit option */}
+                    <MaterialTable
+                        title="CPI historical data"
+                        columns={
+                            this.state.columnData === [] ?
+                                { title: 'Year', field: 'Year' } :
+                                this.state.columnData.map(data => {
+                                    if (data === "Group") return { title: data, field: data, defaultGroupOrder: 0 }
+                                    else if (data === "Sub Group") return { title: data, field: data, defaultGroupOrder: 1 }
+                                    else return { title: data, field: data }
+                                })
+                        }
+                        data={this.state.rawCPIData}
+                        icons={tableIcons}
+                        options={{
+                            search: true,
+                            exportButton: true,
+                            exportAllData: true,
+                            grouping: true,
+                            headerStyle: {
+                                backgroundColor: '#01579b',
+                                color: '#FFF'
+                            }
+                        }}
+                        editable={{
+                            onRowUpdate: (newData, oldData) =>
+                                new Promise((resolve, reject) => {
+                                    setTimeout(() => {
+                                        {
+                                            const data = this.state.rawCPIData;
+                                            const index = data.indexOf(oldData);
+                                            data[index] = newData;
+                                            this.setState({ rawCPIData: data }, () => resolve());
+                                        }
+                                        resolve()
+                                    }, 1000)
+                                })
+                        }}
+                    /> <br /><br />
+
                     {/* Div to collect date and submit to fetch CPI values */}
                     <div className={classes.dateLayout}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
