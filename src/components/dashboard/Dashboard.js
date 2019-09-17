@@ -295,7 +295,7 @@ class Dashboard extends React.Component {
                                 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="month" />
-                                <YAxis domain={[125, 148]} />
+                                <YAxis domain={['dataMin - 5', 'dataMax + 5']} />
                                 <Tooltip />
                                 <Legend />
                                 <Line type="monotone" dataKey="actual" stroke="#ff0000" activeDot={{ r: 8 }} />
