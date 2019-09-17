@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import MaterialTable from 'material-table'
 import { AddBox, ArrowUpward, Check, ChevronLeft, ChevronRight, Clear, DeleteOutline, Edit, FilterList } from '@material-ui/icons';
 import { FirstPage, LastPage, Remove, SaveAlt, Search, ViewColumn } from '@material-ui/icons';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 /** Needs to be removed after completing backend API */
 const data = [
@@ -102,11 +103,15 @@ const styles = theme => ({
         padding: theme.spacing(2)
     },
     dateLayout: {
-        marginLeft: theme.spacing(5)
+        marginLeft: theme.spacing(5),
+        marginTop: theme.spacing(2)
     },
     button: {
         marginLeft: theme.spacing(4),
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(0)
+    },
+    progress: {
+        margin: theme.spacing(2),
     },
 });
 
@@ -119,10 +124,13 @@ class Dashboard extends React.Component {
         cpi: '',
         columnData: [],
         rawCPIData: undefined,
+        trainedCpiData: undefined,
+        loading: false
     }
 
     componentDidMount() {
         this.getRawCPIData()
+        this.getTrainedCPIData()
     }
 
     handleDateChange = date => {
@@ -139,6 +147,14 @@ class Dashboard extends React.Component {
             .then(data => this.setState({ cpi: data }))
     }
 
+    /** Function to be called when we want to re-train with the edited data */
+    handReTrain = () => {
+        this.setState({ loading: true })
+        fetch('http://192.168.29.189:5000/train')
+            .then(response => response.json())
+            .then(data => this.setState({ trainedCpiData: data, loading: false }))
+    }
+
     /** Get past CPI values in JSON format from back-end */
     getRawCPIData = () => {
         fetch('http://192.168.29.189:5000/getjson')
@@ -151,6 +167,12 @@ class Dashboard extends React.Component {
                 ), [])
                 this.setState({ rawCPIData: data, columnData: columnData })
             })
+    }
+
+    getTrainedCPIData = () => {
+        fetch('http://192.168.29.189:5000/trainedCpiData')
+            .then(response => response.json())
+            .then(data => this.setState({ trainedCpiData: data }))
     }
 
     render() {
@@ -216,7 +238,6 @@ class Dashboard extends React.Component {
                                                 const data = this.state.rawCPIData;
                                                 const index = data.indexOf(oldData);
                                                 data[index] = newData;
-                                                console.log(newData)
                                                 fetch('http://192.168.29.189:5000/changecpi', {
                                                     method: 'POST',
                                                     headers: {
@@ -247,34 +268,43 @@ class Dashboard extends React.Component {
                                 />
                             </MuiPickersUtilsProvider>
                             <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
+                            <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.handReTrain()}>Train Model</Button>
                             {
                                 this.state.cpi !== undefined &&
                                 <Typography variant="subtitle1" >
                                     CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
                                 </Typography>
                             }
+                            {
+                                this.state.loading &&
+                                <LinearProgress color="secondary" />
+                            }
                         </div>
                     </div>
                     {/* Div to collect date - End */}
                     {/* Chart container - Start */}
-                    <Container className={classes.chartBody} maxWidth="md">
-                        <LineChart
-                            width={900}
-                            height={400}
-                            data={data}
-                            margin={{
-                                top: 5, right: 30, left: 20, bottom: 5,
-                            }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis domain={[125, 148]} />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="actual" stroke="#ff0000" activeDot={{ r: 8 }} />
-                            <Line type="monotone" dataKey="predicted" stroke="#82ca9d" />
-                        </LineChart>
-                    </Container>
+                    {
+                        this.state.trainedCpiData !== undefined &&
+                        <Container className={classes.chartBody} maxWidth="md">
+                            <LineChart
+                                width={900}
+                                height={400}
+                                data={this.state.trainedCpiData}
+                                margin={{
+                                    top: 5, right: 30, left: 20, bottom: 5,
+                                }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" />
+                                <YAxis domain={[125, 148]} />
+                                <Tooltip />
+                                <Legend />
+                                <Line type="monotone" dataKey="actual" stroke="#ff0000" activeDot={{ r: 8 }} />
+                                <Line type="monotone" dataKey="predicted" stroke="#82ca9d" />
+                            </LineChart>
+                        </Container>
+                    }
                     {/* Chart container - End */}
+
                 </main>
 
                 {/* Footer */}
