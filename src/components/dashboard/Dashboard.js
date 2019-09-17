@@ -90,21 +90,23 @@ const styles = theme => ({
     chartBody: {
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(0),
     },
     footer: {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(6),
     },
-    dateLayout: {
+    bodyLayout: {
         width: 'auto',
-        marginRight: theme.spacing(3),
-        marginLeft: theme.spacing(12),
-        marginTop: theme.spacing(3),
-        paddingTop: theme.spacing(1)
+        margin: theme.spacing(3),
+        padding: theme.spacing(2)
+    },
+    dateLayout: {
+        marginLeft: theme.spacing(5)
     },
     button: {
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.spacing(4),
+        marginTop: theme.spacing(1)
     },
 });
 
@@ -129,9 +131,10 @@ class Dashboard extends React.Component {
 
     /** After fetching from backend, will re-render the data value of the page state */
     handleCPISubmit = () => {
+        this.setState({ cpi: '' })
         var date = this.state.selectedDate
         date = `${date.getFullYear()}-${date.getMonth() + 1}-01`
-        fetch(`http://localhost:5000/time/${date}`)
+        fetch(`http://192.168.29.189:5000/time/${date}`)
             .then(response => response.json())
             .then(data => this.setState({ cpi: data }))
     }
@@ -180,71 +183,84 @@ class Dashboard extends React.Component {
                     </div>
                     {/* CPI header end */}
                     <br /><br />
-                    {/* Table for all CPI past data with edit option */}
-                    <MaterialTable
-                        title="CPI historical data"
-                        columns={
-                            this.state.columnData === [] ?
-                                { title: 'Year', field: 'Year' } :
-                                this.state.columnData.map(data => {
-                                    if (data === "Group") return { title: data, field: data, defaultGroupOrder: 0 }
-                                    else if (data === "Sub Group") return { title: data, field: data, defaultGroupOrder: 1 }
-                                    else return { title: data, field: data }
-                                })
-                        }
-                        data={this.state.rawCPIData}
-                        icons={tableIcons}
-                        options={{
-                            search: true,
-                            exportButton: true,
-                            exportAllData: true,
-                            grouping: true,
-                            headerStyle: {
-                                backgroundColor: '#01579b',
-                                color: '#FFF'
+                    <div className={classes.bodyLayout}>
+                        {/* Table for all CPI past data with edit option */}
+                        <MaterialTable
+                            title="CPI historical data"
+                            columns={
+                                this.state.columnData === [] ?
+                                    { title: 'Year', field: 'Year' } :
+                                    this.state.columnData.map(data => {
+                                        if (data === "Group") return { title: data, field: data, defaultGroupOrder: 0 }
+                                        else if (data === "Sub Group") return { title: data, field: data, defaultGroupOrder: 1 }
+                                        else return { title: data, field: data }
+                                    })
                             }
-                        }}
-                        editable={{
-                            onRowUpdate: (newData, oldData) =>
-                                new Promise((resolve, reject) => {
-                                    setTimeout(() => {
-                                        {
-                                            const data = this.state.rawCPIData;
-                                            const index = data.indexOf(oldData);
-                                            data[index] = newData;
-                                            this.setState({ rawCPIData: data }, () => resolve());
-                                        }
-                                        resolve()
-                                    }, 1000)
-                                })
-                        }}
-                    /> <br /><br />
+                            data={this.state.rawCPIData}
+                            icons={tableIcons}
+                            options={{
+                                search: true,
+                                exportButton: true,
+                                exportAllData: true,
+                                grouping: true,
+                                headerStyle: {
+                                    backgroundColor: '#01579b',
+                                    color: '#FFF'
+                                }
+                            }}
+                            editable={{
+                                onRowUpdate: (newData, oldData) =>
+                                    new Promise((resolve, reject) => {
+                                        setTimeout(() => {
+                                            {
+                                                const data = this.state.rawCPIData;
+                                                const index = data.indexOf(oldData);
+                                                data[index] = newData;
+                                                console.log(newData)
+                                                fetch('http://192.168.29.189:5000/changecpi', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(newData),
+                                                })
+                                                    .then(response => response.text())
+                                                    .then(data => console.log(data))
+                                                this.setState({ rawCPIData: data }, () => resolve());
+                                            }
+                                            resolve()
+                                        }, 1000)
+                                    })
+                            }}
+                        />
+                        <br /><br />
 
-                    {/* Div to collect date and submit to fetch CPI values */}
-                    <div className={classes.dateLayout}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                clearable
-                                openTo="year"
-                                views={["year", "month"]}
-                                value={this.state.selectedDate}
-                                onChange={date => this.handleDateChange(date)}
-                            />
-                        </MuiPickersUtilsProvider>
-                        <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
-                        {
-                            this.state.cpi !== undefined &&
-                            <Typography variant="subtitle1" >
-                                CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
-                            </Typography>
-                        }
+                        {/* div to collect date and submit to fetch CPI values */}
+                        <div className={classes.dateLayout}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    clearable
+                                    openTo="year"
+                                    views={["year", "month"]}
+                                    value={this.state.selectedDate}
+                                    onChange={date => this.handleDateChange(date)}
+                                />
+                            </MuiPickersUtilsProvider>
+                            <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleCPISubmit()}>Calcuate CPI</Button>
+                            {
+                                this.state.cpi !== undefined &&
+                                <Typography variant="subtitle1" >
+                                    CPI for {`${months[this.state.selectedDate.getMonth()]} ${this.state.selectedDate.getFullYear()}`} is {this.state.cpi}
+                                </Typography>
+                            }
+                        </div>
                     </div>
                     {/* Div to collect date - End */}
                     {/* Chart container - Start */}
                     <Container className={classes.chartBody} maxWidth="md">
                         <LineChart
-                            width={550}
-                            height={300}
+                            width={900}
+                            height={400}
                             data={data}
                             margin={{
                                 top: 5, right: 30, left: 20, bottom: 5,
