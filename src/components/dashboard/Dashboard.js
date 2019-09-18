@@ -17,34 +17,6 @@ import { AddBox, ArrowUpward, Check, ChevronLeft, ChevronRight, Clear, DeleteOut
 import { FirstPage, LastPage, Remove, SaveAlt, Search, ViewColumn } from '@material-ui/icons';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-/** Needs to be removed after completing backend API */
-const data = [
-    { 'month': '2017-08-01', 'actual': 143.4, 'predicted': 145.6351178886652 },
-    { 'month': '2017-09-01', 'actual': 142.4, 'predicted': 142.0648096738322 },
-    { 'month': '2017-10-01', 'actual': 142.2, 'predicted': 143.4797602255898 },
-    { 'month': '2017-11-01', 'actual': 142.4, 'predicted': 142.95425889977426 },
-    { 'month': '2017-12-01', 'actual': 143.3, 'predicted': 143.25334313491103 },
-    { 'month': '2018-01-01', 'actual': 144.2, 'predicted': 144.5357134351441 },
-    { 'month': '2018-02-01', 'actual': 143.5, 'predicted': 144.23886529964204 },
-    { 'month': '2018-03-01', 'actual': 143.6, 'predicted': 144.04306817109023 },
-    { 'month': '2018-04-01', 'actual': 144.4, 'predicted': 145.67989143124345 },
-    { 'month': '2018-05-01', 'actual': 146.6, 'predicted': 146.2513355600155 },
-    { 'month': '2018-06-01', 'actual': 148.7, 'predicted': 147.84808155185 },
-    { 'month': '2018-07-01', 'actual': 149.1, 'predicted': 149.983127399407 },
-    { 'month': '2018-08-01', 'actual': 148.0, 'predicted': 148.76277389563907 },
-    { 'month': '2018-09-01', 'actual': 145.8, 'predicted': 147.48996608543771 },
-    { 'month': '2018-10-01', 'actual': 146.7, 'predicted': 145.94555093650698 },
-    { 'month': '2018-11-01', 'actual': 149.2, 'predicted': 148.23302049746948 },
-    { 'month': '2018-12-01', 'actual': 150.5, 'predicted': 151.29764144056156 },
-    { 'month': '2019-01-01', 'actual': 151.4, 'predicted': 150.18524668914114 },
-    { 'month': '2019-02-01', 'actual': 152.0, 'predicted': 151.47346860214623 },
-    { 'month': '2019-03-01', 'actual': 153.0, 'predicted': 152.51374589187685 },
-    { 'month': '2019-04-01', 'actual': 155.3, 'predicted': 153.75083805978332 },
-    { 'month': '2019-05-01', 'actual': 158.5, 'predicted': 157.309647385509 },
-    { 'month': '2019-06-01', 'actual': 162.1, 'predicted': 159.28317530728728 },
-    { 'month': '2019-07-01', 'actual': 162.6, 'predicted': 162.28299532145914 }
-];
-
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const tableIcons = {
@@ -142,7 +114,7 @@ class Dashboard extends React.Component {
         this.setState({ cpi: '' })
         var date = this.state.selectedDate
         date = `${date.getFullYear()}-${date.getMonth() + 1}-01`
-        fetch(`http://192.168.29.189:5000/time/${date}`)
+        fetch(`http://localhost:5000/time/${date}`)
             .then(response => response.json())
             .then(data => this.setState({ cpi: data }))
     }
@@ -150,14 +122,18 @@ class Dashboard extends React.Component {
     /** Function to be called when we want to re-train with the edited data */
     handReTrain = () => {
         this.setState({ loading: true })
-        fetch('http://192.168.29.189:5000/train')
+        fetch('http://localhost:5000/train')
             .then(response => response.json())
             .then(data => this.setState({ trainedCpiData: data, loading: false }))
+            .catch(error => {
+                alert("ERROR: SVD failed to converge")
+                this.setState({ loading: false })
+            })
     }
 
     /** Get past CPI values in JSON format from back-end */
     getRawCPIData = () => {
-        fetch('http://192.168.29.189:5000/getjson')
+        fetch('http://localhost:5000/getjson')
             .then(response => response.json())
             .then(data => {
                 let columnData = data.reduce((keys, obj) => (
@@ -170,7 +146,7 @@ class Dashboard extends React.Component {
     }
 
     getTrainedCPIData = () => {
-        fetch('http://192.168.29.189:5000/trainedCpiData')
+        fetch('http://localhost:5000/trainedCpiData')
             .then(response => response.json())
             .then(data => this.setState({ trainedCpiData: data }))
     }
@@ -238,7 +214,7 @@ class Dashboard extends React.Component {
                                                 const data = this.state.rawCPIData;
                                                 const index = data.indexOf(oldData);
                                                 data[index] = newData;
-                                                fetch('http://192.168.29.189:5000/changecpi', {
+                                                fetch('http://localhost:5000/changecpi', {
                                                     method: 'POST',
                                                     headers: {
                                                         'Content-Type': 'application/json',
